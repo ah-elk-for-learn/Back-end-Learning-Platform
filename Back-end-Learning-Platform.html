@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Learning Platform</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module" data-presets="react">
+        import React, { useState, useEffect } from 'https://esm.sh/react@18';
+        import { createRoot } from 'https://esm.sh/react-dom@18/client';
+        import { Menu, X, Moon, Sun, CheckCircle, Circle, Lock, AlertCircle, Zap, BookOpen, Code, Target, Trophy, ArrowRight, ChevronDown, ChevronUp } from 'https://esm.sh/lucide-react@0.479.0?deps=react@18';
+
+        // ============================================================================
+        // LEARNING ROADMAP & CURRICULUM DATA
+        // ============================================================================
+
+        const ROADMAP = {
+          stage0: {
+            name: 'Stage 0: Absolute Basics',
+            description: 'Foundation knowledge - what every developer needs to know',
+            goal: 'Get your computer ready & understand what backend means',
+            duration: '1-2 weeks',
+            skills: [
+              {
+                id: 'setup',
+                name: 'Development Environment Setup',
+                category: 'Fundamentals',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Before writing ANY code, you need tools. Think of this like a carpenter setting up their workshop. You'll install Python (the language), a code editor (VS Code - where you write code), and Git (how you save your work). This takes 30 minutes but saves you hours of confusion later. Windows, Mac, Linux - it's the same concept, just slightly different steps. Don't skip this or copy-paste commands you don't understand. Take 10 minutes to learn what each tool does.`,
+                practicalExample: `You'll install: Python 3.12, VS Code with Python extension, and Git. Then you'll create a folder called "backend-learning" and make your first Git repository. By the end, you can open a terminal, navigate to your folder, and type "python --version" to see Python is installed.`,
+                miniExercise: `1) Install Python, VS Code, and Git. 2) Create a folder "my-backend-project". 3) Open it in VS Code. 4) Open the terminal in VS Code. 5) Run "git init" to create a Git repository. 6) Create a file called "hello.py" with print("I'm ready to code!")`,
+                commonMistakes: `Downloading the wrong Python version (use 3.10+). Not installing VS Code extensions. Skipping Git setup (don't skip it!). Not understanding PATH - if "python" doesn't work, your computer can't find it.`,
+                learningTips: `Watch a 5-minute setup video first, then do it yourself. Don't skip troubleshooting - if something fails, that's NORMAL. Search "python installation [your OS]" and follow official docs. Join a Discord community if you get stuck.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'terminal',
+                name: 'Terminal/Command Line Basics',
+                category: 'Fundamentals',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `The terminal is how you talk to your computer without clicking buttons. Backend developers live in the terminal. "cd" moves you between folders, "ls" shows what's in a folder, "mkdir" creates folders, "python myfile.py" runs code. You'll use this 100 times a day. This is not optional. The terminal looks scary but it's just a text interface. In 3 days, it will feel normal.`,
+                practicalExample: `Open terminal. Type "pwd" to see where you are. Type "ls" to see files. Type "mkdir test-folder" to create a folder. Type "cd test-folder" to enter it. Type "python --version" to check Python. Type "cd .." to go back. These 6 commands will cover 80% of what you do.`,
+                miniExercise: `1) Open terminal. 2) Navigate to your desktop using cd. 3) Create 3 folders: python-practice, django-projects, notes. 4) Go into python-practice. 5) Create a file called test.txt using "echo hello > test.txt". 6) See it using "ls". 7) Go back to desktop.`,
+                commonMistakes: `Using "cd Desktop" instead of "cd Desktop/" on some systems. Not knowing you can use TAB to auto-complete. Being afraid of the terminal (it won't explode!). Getting lost and not knowing where you are (use "pwd" anytime).`,
+                learningTips: `Practice for 10 minutes daily for a week. The terminal will become second nature. Use "man [command]" to see help. Windows? Use PowerShell or Git Bash. Mac/Linux? Use the built-in Terminal.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'git-basics',
+                name: 'Git Fundamentals',
+                category: 'Fundamentals',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Git is version control - it saves snapshots of your code. Think of it like Google Docs "version history" but for code. You'll use "git add" (prepare changes), "git commit" (save a snapshot with a message), and "git push" (upload to GitHub). Every job requires Git. Every company uses it. You MUST understand this. Not as a bonus - as a requirement. A beginner who knows Git beats an expert who doesn't.`,
+                practicalExample: `Create a file. Make it say "Hello World". Type "git add hello.py". Type "git commit -m 'Add hello world'". Now your code is saved. Change it to "Hello Backend". Type "git add hello.py". Type "git commit -m 'Update message'". Now you have 2 versions you can go back to.`,
+                miniExercise: `1) Create a project folder and git init. 2) Create a Python file with some code. 3) Run "git add ." to add all files. 4) Run "git commit -m 'Initial commit'" to save. 5) Edit the file. 6) Run "git add ." and "git commit -m 'Updated code'". 7) Run "git log" to see your history.`,
+                commonMistakes: `Forgetting to "git add" before commit. Using bad commit messages like "fix" or "update". Not committing often enough. Panicking if you mess up (you can undo most things).`,
+                learningTips: `Commit after every 15-30 minutes of work. Write clear messages: "Add login validation" not "stuff". Use "git status" anytime to see what's happening. GitHub is just cloud storage for Git - learn Git first.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+            ]
+          },
+          stage1: {
+            name: 'Stage 1: Beginner Foundations',
+            description: 'Learn Python basics - variables, logic, functions, data structures',
+            goal: 'Write Python programs that solve real problems',
+            duration: '3-4 weeks',
+            skills: [
+              {
+                id: 'python-basics',
+                name: 'Python Fundamentals',
+                category: 'Python',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Python is the language. Variables store data (name = "John"). Data types include strings (text), integers (numbers), floats (decimals), and booleans (true/false). You'll use print() to see output, input() to get user data, and math operators (+, -, *, /) to calculate. Python reads almost like English, which is why it's perfect for beginners. Don't memorize syntax - understand concepts. Your brain will remember patterns naturally.`,
+                practicalExample: `age = 25, name = "Alice", price = 99.99, is_active = True. Print them. Get input: user_age = input("How old are you?"). Do math: total = 100 + 50. The syntax is simple - focus on thinking through the logic.`,
+                miniExercise: `1) Create variables for your name, age, and favorite food. 2) Print them. 3) Ask user for their age using input(). 4) Calculate when they were born. 5) Tell them the answer. 6) Ask if they like Python (yes/no). 7) Print a message based on their answer.`,
+                commonMistakes: `Confusing = (assignment) with == (comparison). Forgetting quotes around strings. Not converting input() to int (input returns text, not numbers). Using spaces in variable names (use underscores: my_variable).`,
+                learningTips: `Code along with tutorials, don't just watch. Make small programs: calculator, name printer, age calculator. Test everything. Break things intentionally to learn errors.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'control-flow',
+                name: 'Control Flow (If/Else/Loops)',
+                category: 'Python',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Logic makes decisions. "if age > 18: print('adult')" runs code ONLY if true. "else" handles false cases. "elif" checks another condition. "for" loops repeat actions: "for i in range(5)" repeats 5 times. "while" repeats until something is false. These are the building blocks of programs. Master these and you can build anything.`,
+                practicalExample: `if score >= 90: print('A'); elif score >= 80: print('B'); else: print('C'). For loop: for i in range(3): print(i) prints 0,1,2. While loop: count=0; while count < 5: print(count); count+=1 counts to 5.`,
+                miniExercise: `1) Ask user for a number. 2) Print "positive" or "negative" or "zero". 3) Ask for a grade. 4) Print corresponding letter (A-F). 5) Create a program that prints numbers 1-10. 6) Modify it to print only even numbers. 7) Create a program that asks "guess the number" until they're right.`,
+                commonMistakes: `Indentation is critical in Python - every if/else/for must indent correctly. Forgetting colons after if/else/for. Confusing = with ==. Using "and/or" incorrectly (if age > 18 AND age < 65).`,
+                learningTips: `Write pseudo-code first: "if person is adult then print adult". Then write Python. Test every path (what if they enter 0? negative? huge number?). Debugging tip: add print() statements to see what's happening.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'functions',
+                name: 'Functions & Modularity',
+                category: 'Python',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Functions are reusable blocks of code. "def greet(name): print(f'Hello {name}')" defines a function. "greet('Alice')" calls it. Functions take inputs (parameters) and return outputs. This prevents repetition. A job-ready developer writes code in small, testable functions. Don't write 1000-line scripts - write many 20-line functions.`,
+                practicalExample: `def add(a, b): return a + b; result = add(5, 3) returns 8. def greet(name): print(f'Hi {name}'); greet('Bob') prints "Hi Bob". Functions with defaults: def greet(name="friend"): makes name optional.`,
+                miniExercise: `1) Write function that takes two numbers and returns their sum. 2) Write function that checks if a number is even or odd. 3) Write function that calculates age from birth year. 4) Write function that converts temperature F to C. 5) Write function that takes a list and returns average. 6) Call each function multiple times with different inputs.`,
+                commonMistakes: `Calling before defining. Confusing parameters (what you define) with arguments (what you pass). Not returning values. Forgetting that indentation matters inside functions.`,
+                learningTips: `A good function does ONE thing. If you name it "do_everything", it's too big. Test functions separately. Use meaningful parameter names: def calculate_discount(price, percentage), not def f(a,b).`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'data-structures',
+                name: 'Data Structures (Lists, Tuples, Dicts)',
+                category: 'Python',
+                difficulty: 'Beginner',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Lists store multiple items: fruits = ['apple', 'banana']. Access with fruits[0]. Dictionaries store key-value pairs: person = {'name': 'Alice', 'age': 25}. Access with person['name']. Lists are ordered and changeable. Tuples are like lists but unchangeable. Dicts are like real dictionaries - you look up by key. These are used constantly in backend development. Understand them deeply.`,
+                practicalExample: `List: numbers = [1,2,3]; numbers.append(4); numbers[0] = 0; print(numbers[1]). Dict: user = {'name': 'Bob', 'email': 'bob@ex.com'}; user['name']; user['age'] = 30. Looping: for item in fruits: print(item). for key, value in person.items(): print(key, value).`,
+                miniExercise: `1) Create a list of 5 foods. Print the 2nd item. 2) Add a new food. 3) Remove one. 4) Create a student dict with name, age, grade. 5) Change the grade. 6) Add a new field (email). 7) Create a list of dicts (3 students). 8) Loop through and print all names.`,
+                commonMistakes: `Confusing lists [1,2,3] with tuples (1,2,3). Trying to modify tuples (you can't). Using wrong index (Python starts at 0). Forgetting quotes in dict keys: {'name': 'Bob'} not {name: 'Bob'}.`,
+                learningTips: `Use list.append(), list.remove(), dict.keys(), dict.values(). Learn list comprehensions: [x*2 for x in numbers] doubles every number. Use len() to get length. Use "in" to check existence: if 'apple' in fruits.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+            ]
+          },
+          stage2: {
+            name: 'Stage 2: Pre-Job Preparation',
+            description: 'Learn Django, APIs, databases - the actual backend tech',
+            goal: 'Build a complete backend API from scratch',
+            duration: '4-5 weeks',
+            skills: [
+              {
+                id: 'oop-basics',
+                name: 'Object-Oriented Programming (OOP)',
+                category: 'Python',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `OOP organizes code into objects (like real-world things). A class is a blueprint. An object is an instance. "class User:" defines a user object. "def __init__" sets up initial data. "self.name = name" stores data. Methods are functions inside classes. Inheritance lets classes inherit from others. This is how professional code is organized. Django is built on OOP. You must understand it.`,
+                practicalExample: `class User: def __init__(self, name, email): self.name = name; self.email = email; def change_email(self, new_email): self.email = new_email. Create: user1 = User('Alice', 'alice@ex.com'). Use: user1.change_email('alice2@ex.com').`,
+                miniExercise: `1) Create a Book class with title, author, pages. 2) Add a method that tells if it's long (>300 pages). 3) Create 3 book objects. 4) Check which are long. 5) Create a BankAccount class with balance and owner. 6) Add deposit() and withdraw() methods. 7) Test them.`,
+                commonMistakes: `Forgetting "self" in methods. Not understanding __init__. Confusing classes and objects. Making classes too complicated (start simple).`,
+                learningTips: `OOP mirrors real-world objects. Think of a Car: it has properties (color, speed) and actions (accelerate, brake). Code that way. Don't use OOP for simple scripts, but use it when you have complex data.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'django-intro',
+                name: 'Django Framework Basics',
+                category: 'Django',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Django is a framework that handles repetitive backend tasks. It manages databases, routing, authentication, templates. "django-admin startproject mysite" creates a project. "python manage.py runserver" starts your server. Django uses the MVT pattern: Models (database), Views (logic), Templates (HTML). You don't write raw SQL - Django handles it. You don't build routing from scratch - Django does it. This is what makes Django powerful.`,
+                practicalExample: `Create project: django-admin startproject myapp. Create app: python manage.py startapp blog. In models.py: class Post(models.Model): title = models.CharField(max_length=100). In urls.py: path('posts/', views.list_posts). In views.py: def list_posts(request): return render(request, 'posts.html').`,
+                miniExercise: `1) Create a Django project. 2) Create an app called 'notes'. 3) Create a Note model with title and content. 4) Run migrations. 5) Create a view that returns "Hello from notes". 6) Map it to a URL. 7) Visit it in browser.`,
+                commonMistakes: `Not running migrations (python manage.py migrate). Not creating urls.py in your app. Confusing models, views, and templates. Forgetting to add app to INSTALLED_APPS.`,
+                learningTips: `The Django docs are excellent - use them. Start with a simple blog app. Don't learn everything - just routes, views, models. DRF comes next.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'drf-apis',
+                name: 'Django REST Framework (DRF)',
+                category: 'Django',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `DRF turns Django into an API builder. APIs return JSON (not HTML). "class PostSerializer" converts data to JSON. "class PostViewSet" handles GET/POST/PUT/DELETE. Routers automatically create URLs. A backend developer spends 80% of time building APIs. You MUST master this. DRF does 90% of the work - you just tell it your data structure.`,
+                practicalExample: `Serializer: class PostSerializer(serializers.ModelSerializer): class Meta: model = Post; fields = ['id', 'title', 'content']. ViewSet: class PostViewSet(viewsets.ModelViewSet): queryset = Post.objects.all(); serializer_class = PostSerializer. Router handles the rest.`,
+                miniExercise: `1) Create a Todo model. 2) Create a TodoSerializer. 3) Create a TodoViewSet. 4) Register in urls.py. 5) Test GET /api/todos/. 6) Test POST to create a todo. 7) Test PUT to edit. 8) Test DELETE.`,
+                commonMistakes: `Not installing DRF (pip install djangorestframework). Forgetting to add to INSTALLED_APPS. Serializers not matching model fields. Not handling permissions.`,
+                learningTips: `DRF provides automatic documentation at /api/. Use it to test. Learn the 4 HTTP methods: GET (read), POST (create), PUT (edit), DELETE (remove). These are 90% of what you'll do.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'databases',
+                name: 'SQL & Databases',
+                category: 'Databases',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Databases store data permanently. Django uses SQL (Structured Query Language) but handles it for you. SELECT gets data, INSERT adds data, UPDATE changes data, DELETE removes data. Django's ORM (Object-Relational Mapping) converts Python to SQL. You don't write SELECT queries - Django does. But you MUST understand what's happening. "post = Post.objects.get(id=1)" runs a SELECT query. "Post.objects.create(title='...')" runs INSERT.`,
+                practicalExample: `In Django: Post.objects.all() - SELECT all posts. Post.objects.filter(author='Alice') - SELECT where author is Alice. post.delete() - DELETE this post. post.title = 'New'; post.save() - UPDATE post. You don't write SQL, Django does, but understand that's what happens.`,
+                miniExercise: `1) Create models with relationships (User has many Posts). 2) Create users and posts in Django shell. 3) Query all posts. 4) Query posts by a specific user. 5) Update a post. 6) Delete a post. 7) Count total posts.`,
+                commonMistakes: `Running queries in a loop (N+1 problem). Not using select_related or prefetch_related. Not indexing frequently queried fields. Trusting user input without validating.`,
+                learningTips: `Use Django shell: python manage.py shell. Test queries there. Learn .select_related() for joins and .prefetch_related() for foreign keys. Good database design prevents future problems.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'http-apis',
+                name: 'HTTP & REST APIs',
+                category: 'Backend Concepts',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `HTTP is how web communication works. GET requests retrieve data. POST sends data. PUT updates data. DELETE removes data. REST is a pattern for organizing APIs. Status codes tell you what happened: 200 (success), 404 (not found), 500 (server error). Headers provide metadata. Requests have a method, URL, headers, and body. Responses have status, headers, and body. Understanding HTTP is understanding the web.`,
+                practicalExample: `GET /api/posts/ - retrieve all posts. POST /api/posts/ with body {title, content} - create post. PUT /api/posts/1/ with new data - update post 1. DELETE /api/posts/1/ - delete post 1. Status 201 means created, 204 means deleted successfully.`,
+                miniExercise: `1) Using curl or Postman, test your DRF API. 2) GET all items. 3) POST to create. 4) PUT to update. 5) DELETE to remove. 6) Test wrong URLs (404). 7) Test invalid data.`,
+                commonMistakes: `Confusing HTTP methods. POST for reading data. Not returning correct status codes. Not validating input data. Not documenting what each endpoint does.`,
+                learningTips: `Learn Postman - it's a game-changer for testing APIs. Understand REST conventions. Use semantic URLs: /api/users/1/posts not /api/getpostsfromuser?id=1.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+            ]
+          },
+          stage3: {
+            name: 'Stage 3: Intermediate Skills',
+            description: 'Authentication, permissions, testing, deployment basics',
+            goal: 'Build secure, tested, deployed applications',
+            duration: '3-4 weeks',
+            skills: [
+              {
+                id: 'authentication',
+                name: 'Authentication & Tokens (JWT)',
+                category: 'Security',
+                difficulty: 'Intermediate',
+                importance: 'Critical',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Authentication verifies WHO you are. Tokens prove you're logged in without storing sessions. JWT (JSON Web Tokens) are tokens that contain info. User logs in with username/password. Server returns a token. Client sends token with requests. Server validates token. This is how modern APIs work. Django REST Framework provides token authentication. You can also use JWT. Both are common in production.`,
+                practicalExample: `User logs in: POST /api/login/ with email and password. Returns: {token: "abc123xyz"}. Now include token: GET /api/profile/ with header Authorization: Bearer abc123xyz. Server validates token, returns profile.`,
+                miniExercise: `1) Implement user registration endpoint. 2) Implement login that returns a token. 3) Protect an endpoint so only logged-in users access it. 4) Test with and without token. 5) Add token expiration. 6) Implement logout (optional).`,
+                commonMistakes: `Storing passwords in plain text (always hash). Sending tokens in URL (use headers). Not setting token expiration. Trusting client-side authentication alone.`,
+                learningTips: `Use Django's built-in User model. Use simple-jwt library. Never invent your own authentication. Understand that auth is about trust - the server must verify every request.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'permissions',
+                name: 'Permissions & Access Control',
+                category: 'Security',
+                difficulty: 'Intermediate',
+                importance: 'Important',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Authentication is WHO you are. Permissions are WHAT you can do. A user might be authenticated but not have permission to delete other users' posts. DRF provides permission classes. IsAuthenticated means logged-in. IsAdminUser means admin only. Custom permissions let you define rules. Every API endpoint needs permission checks. Never trust the client to enforce permissions - always check server-side.`,
+                practicalExample: `Only post owner can edit: check if request.user == post.author. Only admins can delete: IsAdminUser permission. Public read, authenticated write: GET allowed for anyone, POST requires IsAuthenticated.`,
+                miniExercise: `1) Create a Post model with an author. 2) Only owner can edit/delete. 3) Anyone can read. 4) Implement custom permission class. 5) Test as different users.`,
+                commonMistakes: `Checking permissions on client (user can bypass). Allowing everyone to do everything. Not checking ownership before allowing edits. Forgetting that permissions are per-endpoint.`,
+                learningTips: `Write permission checks FIRST. Think about who should access what. Test as different user types: anonymous, regular user, owner, admin.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'testing',
+                name: 'Testing & Quality Assurance',
+                category: 'Professional Skills',
+                difficulty: 'Intermediate',
+                importance: 'Important',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Tests verify your code works. Unit tests test single functions. Integration tests test multiple parts together. Django and DRF provide testing tools. "python manage.py test" runs tests. Write tests that cover important paths. A tested application is a reliable application. Companies value developers who test. It's not extra - it's professional.`,
+                practicalExample: `from django.test import TestCase, APITestCase. Test that creating a post works. Test that posting without title fails. Test that only owner can edit.`,
+                miniExercise: `1) Write 5 unit tests for a function. 2) Write 3 API tests: GET, POST, unauthorized. 3) Test permissions: owner can edit, others can't. 4) Run all tests. 5) Aim for 70%+ test coverage.`,
+                commonMistakes: `Testing only happy paths. Not testing errors. Testing implementation instead of behavior. Tests that are too fragile and break easily.`,
+                learningTips: `Write tests as you code, not after. Test what matters: business logic, permissions, edge cases. Use fixtures to create test data. Aim for 70% coverage minimum.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'debugging',
+                name: 'Debugging & Problem Solving',
+                category: 'Professional Skills',
+                difficulty: 'Intermediate',
+                importance: 'Important',
+                requiredForJob: true,
+                whenToLearn: 'Now',
+                explanation: `Debugging is finding and fixing bugs. Add print() statements to see values. Use the debugger to step through code. Read error messages carefully - they tell you what's wrong. Check assumptions: "I think x is 5" - verify it. Use logging instead of print() in production. Debugging is a skill. Learn it early.`,
+                practicalExample: `Error: "NoneType has no attribute name". This means something is None when you expected it to have data. Add: print(f"user={user}") to check. Or use: import pdb; pdb.set_trace() to pause and inspect.`,
+                miniExercise: `1) Intentionally write buggy code. 2) Use print() to find the bug. 3) Use pdb to debug. 4) Write logging statements. 5) Fix the bug. 6) Verify it's fixed.`,
+                commonMistakes: `Not reading error messages. Guessing what's wrong instead of investigating. Adding 100 print() statements. Not removing debugging code after.`,
+                learningTips: `Error messages are your friend - read them completely. Narrow down the problem: is it the input, logic, or output? Test hypotheses. Use the debugger, not just print().`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'deployment',
+                name: 'Basic Deployment & DevOps',
+                category: 'Professional Skills',
+                difficulty: 'Intermediate',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Now',
+                explanation: `Deployment means putting code on a server so users can access it. Heroku, Railway, or DigitalOcean host Django apps. You push code, they run it. Environment variables store secrets (API keys, database passwords). Migrations update the database. First deployment is scary but straightforward. Your app runs on YOUR computer. Deployment makes it run on THEIR computer. That's the only difference.`,
+                practicalExample: `Create Heroku account. Push code to GitHub. Connect GitHub to Heroku. Heroku automatically runs migrations and starts server. Visit: https://myapp.herokuapp.com. Your API is live!`,
+                miniExercise: `1) Create GitHub account and push code. 2) Create Heroku/Railway account. 3) Deploy a simple Django app. 4) Test the live API. 5) Make a change, push, redeploy.`,
+                commonMistakes: `Hardcoding secrets in code. Using SQLite in production (use PostgreSQL). Not setting DEBUG=False. Not running migrations on deployment.`,
+                learningTips: `Start with Heroku (easy). Use environment variables for secrets. Test locally before deploying. Keep first deployment simple.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+            ]
+          },
+          stage4: {
+            name: 'Stage 4: Advanced & Job-Ready',
+            description: 'Advanced patterns, optimization, real-world scenarios',
+            goal: 'Become a confident backend developer ready for jobs',
+            duration: '3-4 weeks',
+            skills: [
+              {
+                id: 'advanced-drf',
+                name: 'Advanced DRF Patterns',
+                category: 'Django',
+                difficulty: 'Advanced',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Later',
+                explanation: `Advanced DRF includes custom serializers, complex relationships, custom views, and mixins. Use SerializerMethodField for computed properties. Use reverse relationships for nested data. Use custom viewsets for special logic. Pagination handles large datasets. Filtering and search improve usability. These make you more efficient.`,
+                practicalExample: `Custom field: serializer_display_name = serializers.SerializerMethodField(); def get_serializer_display_name(self, obj): return f"{obj.first_name} {obj.last_name}". Nested: user=UserSerializer() in posts. Custom view: override create() to add current user as author.`,
+                miniExercise: `1) Create nested serializers (User with Posts). 2) Add computed fields. 3) Implement filtering by author. 4) Add pagination. 5) Add search by title.`,
+                commonMistakes: `Over-nesting serializers (performance issues). Not using select_related in viewsets. Forgetting to handle None values.`,
+                learningTips: `Read DRF docs deeply. Understand queryset optimization. Use Django Debug Toolbar to see queries.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'performance',
+                name: 'Performance & Optimization',
+                category: 'Professional Skills',
+                difficulty: 'Advanced',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Later',
+                explanation: `Slow APIs frustrate users. Use .select_related() to avoid N+1 queries. Use .prefetch_related() for many-to-many. Cache frequently accessed data. Index database fields. Monitor slow queries. A slow app is a bad app. Performance is not optional.`,
+                practicalExample: `N+1 problem: for post in posts: print(post.author.name) - loops author lookups. Fix: posts = Post.objects.select_related('author'). Caching: expensive calculation stored and reused.`,
+                miniExercise: `1) Write slow query (N+1). 2) Use Django Debug Toolbar to see 100 queries. 3) Optimize with select_related. 4) See 1 query. 5) Celebrate.`,
+                commonMistakes: `Premature optimization. Using caching when queries are fine. Not profiling before optimizing.`,
+                learningTips: `Optimize after measuring. Use Django Debug Toolbar. Index wisely. Cache judiciously.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'error-handling',
+                name: 'Error Handling & Logging',
+                category: 'Professional Skills',
+                difficulty: 'Advanced',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Later',
+                explanation: `Good error handling returns helpful error messages. Log errors to track problems. Never expose internal errors to users. Handle exceptions gracefully. Use try/except carefully. Log warnings and info, not just errors.`,
+                practicalExample: `try: post = Post.objects.get(id=1) except Post.DoesNotExist: return Response({'error': 'Not found'}, status=404). Logging: import logging; logger.error(f"Failed to process: {e}")`,
+                miniExercise: `1) Write endpoints with error handling. 2) Add logging. 3) Test error cases. 4) View logs.`,
+                commonMistakes: `Bare except clauses. Logging too little or too much. Not handling validation errors.`,
+                learningTips: `Log strategically: errors, important events, warnings. Don't log everything.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'architecture',
+                name: 'Application Architecture & Design Patterns',
+                category: 'Professional Skills',
+                difficulty: 'Advanced',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Later',
+                explanation: `Good architecture grows with your app. Use services for business logic. Use repositories for database access. Separate concerns: models for data, views for HTTP, services for logic. Design for change: new requirements will come. Don't hardcode rules in views.`,
+                practicalExample: `Service: class UserService: def create_user(self, email, password): hash password; create user; return user. View just calls: UserService().create_user(email, password).`,
+                miniExercise: `1) Refactor views into services. 2) Extract business logic. 3) Make code reusable.`,
+                commonMistakes: `Logic in views. Hardcoded rules. No separation of concerns.`,
+                learningTips: `Think long-term. Would someone 6 months later understand this? Can you add a new feature easily?`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+              {
+                id: 'security-advanced',
+                name: 'Security Best Practices',
+                category: 'Security',
+                difficulty: 'Advanced',
+                importance: 'Important',
+                requiredForJob: false,
+                whenToLearn: 'Later',
+                explanation: `Security is ongoing. Protect against SQL injection (use ORM), cross-site scripting (validate input), CSRF attacks (Django handles), and more. Use HTTPS always. Validate all input. Hash passwords. Never log secrets. Security is not a feature - it's essential.`,
+                practicalExample: `Don't: query = f"SELECT * FROM posts WHERE author={user_input}". Do: Post.objects.filter(author=user_input). HTTPS only. CORS configuration.`,
+                miniExercise: `1) Learn OWASP top 10. 2) Audit your code. 3) Fix vulnerabilities.`,
+                commonMistakes: `Trusting user input. Not using HTTPS. Logging secrets. Weak passwords.`,
+                learningTips: `Security is responsibility. Stay updated on threats. Use security headers.`,
+                videoLink: 'https://www.youtube.com/watch?v=...',
+              },
+            ]
+          }
+        };
+
+        const ASSESSMENTS = {
+          'python-basics': {
+            questions: [
+              {
+                id: 1,
+                question: 'What does this code print? age = 25; print(age > 20)',
+                options: ['True', 'False', '25', 'Error'],
+                correct: 0,
+                explanation: 'The expression age > 20 evaluates to True because 25 is greater than 20.'
+              },
+              {
+                id: 2,
+                question: 'What is the data type of "Hello"?',
+                options: ['Integer', 'String', 'Boolean', 'List'],
+                correct: 1,
+                explanation: 'Text wrapped in quotes is a string in Python.'
+              },
+              {
+                id: 3,
+                question: 'How do you create a variable?',
+                options: ['var x = 5', 'x = 5', 'x: 5', 'create x = 5'],
+                correct: 1,
+                explanation: 'Python uses the simple syntax: variable_name = value'
+              },
+              {
+                id: 4,
+                question: 'What is the output? print(10 / 2)',
+                options: ['5', '5.0', 'Error', 'undefined'],
+                correct: 1,
+                explanation: 'In Python 3, division always returns a float. Use // for integer division.'
+              },
+              {
+                id: 5,
+                question: 'Which is NOT a Python data type?',
+                options: ['String', 'Integer', 'Dictionary', 'Array'],
+                correct: 3,
+                explanation: 'Python uses Lists, not Arrays. Arrays come from NumPy.'
+              },
+            ]
+          },
+          'control-flow': {
+            questions: [
+              {
+                id: 1,
+                question: 'What is the output? x = 5; if x > 3: print("yes"); else: print("no")',
+                options: ['yes', 'no', 'Error', 'yes no'],
+                correct: 0,
+                explanation: 'Since 5 > 3 is True, the if block executes.'
+              },
+              {
+                id: 2,
+                question: 'How many times does this loop run? for i in range(5): print(i)',
+                options: ['4 times', '5 times', '6 times', 'Error'],
+                correct: 1,
+                explanation: 'range(5) generates 0,1,2,3,4 - that\'s 5 numbers.'
+              },
+              {
+                id: 3,
+                question: 'What is the output? x = 0; while x < 3: print(x); x = x + 1',
+                options: ['0 1 2', '0 1 2 3', 'Error', 'Infinite loop'],
+                correct: 0,
+                explanation: 'Loop runs while x < 3. When x becomes 3, it stops.'
+              },
+            ]
+          },
+          'functions': {
+            questions: [
+              {
+                id: 1,
+                question: 'What is the output? def add(a, b): return a + b; print(add(3, 4))',
+                options: ['34', '7', 'Error', 'add(3, 4)'],
+                correct: 1,
+                explanation: 'The function returns the sum: 3 + 4 = 7'
+              },
+              {
+                id: 2,
+                question: 'What happens if you call a function before defining it?',
+                options: ['Works fine', 'Python ignores it', 'Error: function not defined', 'Returns None'],
+                correct: 2,
+                explanation: 'Functions must be defined before they\'re called.'
+              },
+            ]
+          },
+          'django-intro': {
+            questions: [
+              {
+                id: 1,
+                question: 'What does MTV stand for in Django?',
+                options: ['Model, Template, View', 'Model, Test, Variable', 'Module, Template, Viewer', 'None of these'],
+                correct: 0,
+                explanation: 'Django uses Model (database), Template (HTML), View (logic).'
+              },
+              {
+                id: 2,
+                question: 'How do you start a Django project?',
+                options: ['python django new', 'django-admin startproject', 'pip install django', 'python manage.py init'],
+                correct: 1,
+                explanation: 'Use django-admin startproject [name] to create a project.'
+              },
+            ]
+          },
+        };
+
+        // ============================================================================
+        // MAIN APP COMPONENT
+        // ============================================================================
+
+        function BackendLearningPlatform() {
+          const [currentPage, setCurrentPage] = useState('home');
+          const [darkMode, setDarkMode] = useState(() => {
+            const saved = localStorage.getItem('darkMode');
+            return saved ? JSON.parse(saved) : false;
+          });
+          const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+          const [userProgress, setUserProgress] = useState(() => {
+            const saved = localStorage.getItem('userProgress');
+            return saved ? JSON.parse(saved) : {};
+          });
+          const [selectedSkill, setSelectedSkill] = useState(null);
+          const [assessmentState, setAssessmentState] = useState({});
+          const [personalizationAnswers, setPersonalizationAnswers] = useState({});
+
+          // Save dark mode preference
+          useEffect(() => {
+            localStorage.setItem('darkMode', JSON.stringify(darkMode));
+            if (darkMode) {
+              document.body.classList.add('dark', 'bg-gray-900', 'text-white');
+              document.body.classList.remove('bg-white', 'text-gray-900');
+            } else {
+              document.body.classList.remove('dark', 'bg-gray-900', 'text-white');
+              document.body.classList.add('bg-white', 'text-gray-900');
+            }
+          }, [darkMode]);
+
+          // Save progress
+          useEffect(() => {
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+          }, [userProgress]);
+
+          const handleSkillComplete = (skillId) => {
+            setUserProgress(prev => ({
+              ...prev,
+              [skillId]: { completed: true, completedAt: new Date().toISOString() }
+            }));
+          };
+
+          const handleAssessmentSubmit = (skillId, score) => {
+            setUserProgress(prev => ({
+              ...prev,
+              [skillId]: { ...prev[skillId], assessmentScore: score, assessed: true }
+            }));
+            setAssessmentState({});
+          };
+
+          // Get all skills
+          const getAllSkills = () => {
+            const skills = [];
+            Object.values(ROADMAP).forEach(stage => {
+              skills.push(...stage.skills);
+            });
+            return skills;
+          };
+
+          const calculateProgress = () => {
+            const allSkills = getAllSkills();
+            const completed = allSkills.filter(s => userProgress[s.id]?.completed).length;
+            return Math.round((completed / allSkills.length) * 100);
+          };
+
+          const calculateStageProgress = (stageName) => {
+            const stage = ROADMAP[stageName];
+            const completed = stage.skills.filter(s => userProgress[s.id]?.completed).length;
+            return Math.round((completed / stage.skills.length) * 100);
+          };
+
+          // Page Components
+          const renderHome = () => (
+            <div className="space-y-12">
+              {/* Hero Section */}
+              <div className={`relative overflow-hidden rounded-2xl p-12 ${darkMode ? 'bg-gradient-to-br from-blue-900 to-purple-900' : 'bg-gradient-to-br from-blue-600 to-purple-600'} text-white`}>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Zap size={32} />
+                    <h1 className="text-5xl font-bold">Backend Developer Roadmap</h1>
+                  </div>
+                  <p className="text-xl opacity-90 max-w-2xl mb-8">
+                    From zero to job-ready. Learn Python, Django, and APIs through structured, practical learning.
+                  </p>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => setCurrentPage('roadmap')}
+                      className={`px-6 py-3 rounded-lg font-semibold transition ${darkMode ? 'bg-white text-blue-600 hover:bg-gray-100' : 'bg-white text-blue-600 hover:bg-gray-100'}`}
+                    >
+                      Start Learning
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage('first-job-guide')}
+                      className="px-6 py-3 rounded-lg font-semibold border-2 border-white text-white hover:bg-white hover:bg-opacity-10 transition"
+                    >
+                      Job Guide
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Overview */}
+              <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h2 className="text-2xl font-bold mb-6">Your Progress</h2>
+                <div className="w-full bg-gray-300 rounded-full h-4 mb-4 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+                    style={{ width: `${calculateProgress()}%` }}
+                  />
+                </div>
+                <p className={`text-lg font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {calculateProgress()}% Complete ({getAllSkills().filter(s => userProgress[s.id]?.completed).length} of {getAllSkills().length} skills)
+                </p>
+              </div>
+
+              {/* Learning Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Total Skills</p>
+                      <p className="text-3xl font-bold">{getAllSkills().length}</p>
+                    </div>
+                    <BookOpen size={40} className={darkMode ? 'text-blue-400' : 'text-blue-500'} />
+                  </div>
+                </div>
+                <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Completed</p>
+                      <p className="text-3xl font-bold">{getAllSkills().filter(s => userProgress[s.id]?.completed).length}</p>
+                    </div>
+                    <CheckCircle size={40} className={darkMode ? 'text-green-400' : 'text-green-500'} />
+                  </div>
+                </div>
+                <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'} mb-1`}>Assessed</p>
+                      <p className="text-3xl font-bold">{getAllSkills().filter(s => userProgress[s.id]?.assessed).length}</p>
+                    </div>
+                    <Trophy size={40} className={darkMode ? 'text-yellow-400' : 'text-yellow-500'} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Features */}
+              <div>
+                <h2 className="text-2xl font-bold mb-6">What You'll Learn</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { icon: Code, title: 'Python Fundamentals', desc: 'Variables, loops, functions, OOP' },
+                    { icon: Target, title: 'Django & DRF', desc: 'Build real backend APIs' },
+                    { icon: AlertCircle, title: 'Best Practices', desc: 'Testing, deployment, security' },
+                    { icon: Trophy, title: 'Job Ready', desc: 'Portfolio projects & interview prep' },
+                  ].map((feature, i) => (
+                    <div key={i} className={`p-4 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex gap-4`}>
+                      <feature.icon size={24} className={darkMode ? 'text-blue-400' : 'text-blue-500'} />
+                      <div>
+                        <h3 className="font-semibold mb-1">{feature.title}</h3>
+                        <p className={darkMode ? 'text-gray-400 text-sm' : 'text-gray-600 text-sm'}>{feature.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+
+          const renderRoadmap = () => (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-bold mb-2">Learning Roadmap</h1>
+                <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>5 stages from absolute beginner to job-ready developer</p>
+              </div>
+
+              {Object.entries(ROADMAP).map(([stageKey, stage]) => (
+                <div key={stageKey} className={`rounded-xl overflow-hidden border ${darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+                  <div className={`p-6 ${darkMode ? 'bg-gray-700' : 'bg-gray-50'} border-b ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h2 className="text-2xl font-bold mb-2">{stage.name}</h2>
+                        <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{stage.description}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{stage.duration}</p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-300 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 transition-all duration-500"
+                        style={{ width: `${calculateStageProgress(stageKey)}%` }}
+                      />
+                    </div>
+                    <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {calculateStageProgress(stageKey)}% Complete
+                    </p>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="space-y-3">
+                      {stage.skills.map(skill => (
+                        <div
+                          key={skill.id}
+                          onClick={() => setSelectedSkill(skill)}
+                          className={`p-4 rounded-lg cursor-pointer transition ${
+                            userProgress[skill.id]?.completed
+                              ? darkMode ? 'bg-green-900 border border-green-700' : 'bg-green-50 border border-green-200'
+                              : darkMode ? 'bg-gray-700 hover:bg-gray-600 border border-gray-600' : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {userProgress[skill.id]?.completed ? (
+                                <CheckCircle size={20} className={darkMode ? 'text-green-400' : 'text-green-500'} />
+                              ) : (
+                                <Circle size={20} className={darkMode ? 'text-gray-400' : 'text-gray-400'} />
+                              )}
+                              <div>
+                                <h3 className="font-semibold">{skill.name}</h3>
+                                <div className="flex gap-2 mt-1">
+                                  <span className={`text-xs px-2 py-1 rounded ${
+                                    skill.difficulty === 'Beginner' ? (darkMode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800') :
+                                    skill.difficulty === 'Intermediate' ? (darkMode ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-800') :
+                                    darkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {skill.difficulty}
+                                  </span>
+                                  {skill.requiredForJob && (
+                                    <span className={`text-xs px-2 py-1 rounded ${darkMode ? 'bg-purple-900 text-purple-200' : 'bg-purple-100 text-purple-800'}`}>
+                                      Required for Job
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <ArrowRight size={20} className={darkMode ? 'text-gray-400' : 'text-gray-400'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+
+          const renderSkillDetail = () => {
+            if (!selectedSkill) return null;
+
+            const skill = selectedSkill;
+            const isCompleted = userProgress[skill.id]?.completed;
+            const assessmentScore = userProgress[skill.id]?.assessmentScore;
+            const assessment = ASSESSMENTS[skill.id];
+
+            return (
+              <div className="space-y-8">
+                <button
+                  onClick={() => setSelectedSkill(null)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} transition`}
+                >
+                  ← Back
+                </button>
+
+                {/* Header */}
+                <div className={`rounded-xl p-8 ${darkMode ? 'bg-gradient-to-r from-blue-900 to-purple-900' : 'bg-gradient-to-r from-blue-500 to-purple-500'} text-white`}>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h1 className="text-4xl font-bold mb-4">{skill.name}</h1>
+                      <div className="flex flex-wrap gap-3">
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${darkMode ? 'bg-white bg-opacity-20' : 'bg-white bg-opacity-20'}`}>
+                          {skill.category}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${darkMode ? 'bg-white bg-opacity-20' : 'bg-white bg-opacity-20'}`}>
+                          {skill.difficulty}
+                        </span>
+                        {skill.requiredForJob && (
+                          <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-400 text-yellow-900">
+                            Required for First Job
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {isCompleted && (
+                      <div className="text-right">
+                        <CheckCircle size={40} className="text-green-300" />
+                        <p className="text-sm mt-2 font-semibold">Completed</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content Tabs */}
+                <div className="space-y-6">
+                  {/* Explanation */}
+                  <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                    <h2 className="text-2xl font-bold mb-4">Understanding {skill.name}</h2>
+                    <div className={`prose ${darkMode ? 'prose-invert' : ''} max-w-none`}>
+                      <p className={`leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {skill.explanation}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Practical Example */}
+                  <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                    <h2 className="text-2xl font-bold mb-4">📝 Practical Example</h2>
+                    <div className={`bg-black rounded-lg p-6 font-mono text-sm overflow-x-auto`}>
+                      <p className="text-green-400 whitespace-pre-wrap">{skill.practicalExample}</p>
+                    </div>
+                  </div>
+
+                  {/* Mini Exercise */}
+                  <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                    <h2 className="text-2xl font-bold mb-4">💪 Mini Exercise</h2>
+                    <div className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {skill.miniExercise.split('\n').map((line, i) => (
+                        <p key={i}>{line}</p>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Common Mistakes */}
+                  <div className={`rounded-xl p-8 ${darkMode ? 'bg-red-900 bg-opacity-30 border border-red-700' : 'bg-red-50 border border-red-200'}`}>
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <AlertCircle size={24} />
+                      Common Mistakes
+                    </h2>
+                    <div className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {skill.commonMistakes.split('\n').map((line, i) => (
+                        <p key={i} className="flex items-start gap-2">
+                          <span className="text-red-500 mt-1">•</span>
+                          <span>{line}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Learning Tips */}
+                  <div className={`rounded-xl p-8 ${darkMode ? 'bg-green-900 bg-opacity-30 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+                    <h2 className="text-2xl font-bold mb-4">💡 Learning Tips</h2>
+                    <div className={`space-y-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {skill.learningTips.split('\n').map((line, i) => (
+                        <p key={i} className="flex items-start gap-2">
+                          <span className="text-green-500 mt-1">✓</span>
+                          <span>{line}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Assessment Section */}
+                  {assessment && (
+                    <div className={`rounded-xl p-8 ${darkMode ? 'bg-blue-900 bg-opacity-30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                      <h2 className="text-2xl font-bold mb-6">✅ Knowledge Check</h2>
+
+                      {assessmentScore !== undefined ? (
+                        <div className="text-center">
+                          <p className={`text-5xl font-bold mb-2 ${assessmentScore >= 70 ? 'text-green-500' : 'text-orange-500'}`}>
+                            {assessmentScore}%
+                          </p>
+                          <p className={`mb-4 ${assessmentScore >= 70 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                            {assessmentScore >= 90 ? 'Excellent!' : assessmentScore >= 70 ? 'Good job!' : 'Review and try again'}
+                          </p>
+                          <button
+                            onClick={() => setAssessmentState({ [skill.id]: 0 })}
+                            className={`px-6 py-2 rounded-lg font-semibold ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white transition`}
+                          >
+                            Retake Assessment
+                          </button>
+                        </div>
+                      ) : assessmentState[skill.id] !== undefined ? (
+                        <AssessmentQuiz
+                          skill={skill}
+                          assessment={assessment}
+                          currentQuestion={assessmentState[skill.id]}
+                          onNext={(qIndex) => setAssessmentState({ [skill.id]: qIndex + 1 })}
+                          onSubmit={(score) => {
+                            handleAssessmentSubmit(skill.id, score);
+                          }}
+                          darkMode={darkMode}
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setAssessmentState({ [skill.id]: 0 })}
+                          className={`w-full px-6 py-3 rounded-lg font-semibold ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white transition`}
+                        >
+                          Start Assessment ({assessment.questions.length} questions)
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Completion Button */}
+                  {!isCompleted && (
+                    <button
+                      onClick={() => handleSkillComplete(skill.id)}
+                      className={`w-full px-6 py-4 rounded-lg font-semibold text-lg transition ${
+                        darkMode
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-green-500 hover:bg-green-600 text-white'
+                      }`}
+                    >
+                      ✓ Mark as Completed
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          };
+
+          const renderPersonalizedPlan = () => (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-bold mb-2">Personalized Learning Plan</h1>
+                <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Get a custom roadmap based on your goals and schedule</p>
+              </div>
+
+              <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                <h2 className="text-2xl font-bold mb-6">Quick Assessment</h2>
+
+                <div className="space-y-6">
+                  {/* Time Availability */}
+                  <div>
+                    <label className="block font-semibold mb-3">How many hours per week can you dedicate?</label>
+                    <div className="flex flex-wrap gap-3">
+                      {['5-10 hours', '10-20 hours', '20-30 hours', '30+ hours'].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => setPersonalizationAnswers(p => ({ ...p, hours: opt }))}
+                          className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            personalizationAnswers.hours === opt
+                              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                              : darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Experience Level */}
+                  <div>
+                    <label className="block font-semibold mb-3">Your coding experience?</label>
+                    <div className="flex flex-wrap gap-3">
+                      {['Absolute Beginner', 'Some coding', 'Familiar with Python', 'Some backend'].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => setPersonalizationAnswers(p => ({ ...p, experience: opt }))}
+                          className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            personalizationAnswers.experience === opt
+                              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                              : darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Goal Timeline */}
+                  <div>
+                    <label className="block font-semibold mb-3">When do you want to be job-ready?</label>
+                    <div className="flex flex-wrap gap-3">
+                      {['2 months', '3-4 months', '6 months', 'No deadline'].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => setPersonalizationAnswers(p => ({ ...p, timeline: opt }))}
+                          className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            personalizationAnswers.timeline === opt
+                              ? darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                              : darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {personalizationAnswers.hours && personalizationAnswers.experience && personalizationAnswers.timeline && (
+                  <div className={`mt-8 p-6 rounded-lg ${darkMode ? 'bg-green-900 bg-opacity-30 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+                    <h3 className="text-xl font-bold mb-4">📋 Your Recommended Path</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="font-semibold mb-1">Study Schedule:</p>
+                        <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                          {personalizationAnswers.hours === '5-10 hours'
+                            ? '1-2 hours daily, 5-7 days/week. Focus on essentials only.'
+                            : personalizationAnswers.hours === '10-20 hours'
+                            ? '1.5-3 hours daily. Balanced approach with projects.'
+                            : personalizationAnswers.hours === '20-30 hours'
+                            ? '4-6 hours daily. Intensive learning with deep projects.'
+                            : '6+ hours daily. Maximum intensity, all topics covered.'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-semibold mb-1">Recommended Duration:</p>
+                        <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                          {personalizationAnswers.timeline === '2 months'
+                            ? 'INTENSIVE: Focus on Stage 0-2 only. Skip advanced topics.'
+                            : personalizationAnswers.timeline === '3-4 months'
+                            ? 'BALANCED: Complete Stages 0-3. Optional Stage 4.'
+                            : personalizationAnswers.timeline === '6 months'
+                            ? 'COMPREHENSIVE: All stages at comfortable pace.'
+                            : 'RELAXED: Learn at your own pace, master everything.'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-semibold mb-1">Priority Skills:</p>
+                        <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                          Python Basics → Git → Django Basics → DRF → Testing → Deployment. Others are optional for first job.
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-semibold mb-1">Next Step:</p>
+                        <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                          Start with Stage 0 today. Set 3-4 short-term goals per week. Track your progress.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+
+          const renderFirstJobGuide = () => (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-bold mb-2">Your First Backend Job Guide</h1>
+                <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>What you need to know and do to land your first role</p>
+              </div>
+
+              {/* Essential vs Optional */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Essential */}
+                <div className={`rounded-xl p-8 ${darkMode ? 'bg-green-900 bg-opacity-30 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+                  <h2 className="text-2xl font-bold mb-6">✅ Essential (Master These)</h2>
+                  <div className="space-y-3">
+                    {[
+                      'Python fundamentals & OOP',
+                      'Django & Django REST Framework',
+                      'SQL & Database design',
+                      'Git & version control',
+                      'HTTP & REST APIs',
+                      'Testing & debugging',
+                      'Building 2-3 portfolio projects',
+                      'Reading documentation',
+                      'Basic deployment',
+                      'Problem-solving mindset'
+                    ].map((skill, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <CheckCircle size={20} className="text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className={darkMode ? 'text-gray-200' : 'text-gray-700'}>{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Optional */}
+                <div className={`rounded-xl p-8 ${darkMode ? 'bg-blue-900 bg-opacity-30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                  <h2 className="text-2xl font-bold mb-6">📚 Optional (For Competitive Edge)</h2>
+                  <div className="space-y-3">
+                    {[
+                      'Celery & async tasks',
+                      'Caching strategies',
+                      'Docker containerization',
+                      'Microservices basics',
+                      'CI/CD pipelines',
+                      'Advanced SQL optimization',
+                      'AWS or cloud deployment',
+                      'GraphQL (alternative to REST)',
+                      'Redis for caching',
+                      'Advanced design patterns'
+                    ].map((skill, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <Circle size={20} className={`${darkMode ? 'text-blue-400' : 'text-blue-500'} mt-0.5 flex-shrink-0`} />
+                        <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Portfolio Projects */}
+              <div className={`rounded-xl p-8 ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+                <h2 className="text-2xl font-bold mb-6">🏗️ Portfolio Projects (Build 2-3)</h2>
+                <div className="space-y-4">
+                  {[
+                    {
+                      name: 'Todo API',
+                      description: 'A simple REST API for managing todos. Use DRF, user authentication, tests.',
+                      skills: 'Django, DRF, Auth, Testing'
+                    },
+                    {
+                      name: 'Blog Platform',
+                      description: 'Users can create posts, comments, follow others. Include search and filtering.',
+                      skills: 'Advanced DRF, Relations, Pagination'
+                    },
+                    {
+                      name: 'E-commerce API',
+                      description: 'Products, shopping cart, orders, payments integration. Show complex features.',
+                      skills: 'Complex models, Transactions, Performance'
+                    }
+                  ].map((project, i) => (
+                    <div key={i} className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                      <h3 className="font-bold text-lg mb-2">{i + 1}. {project.name}</h3>
+                      <p className={`mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{project.description}</p>
+                      <p className={`text-sm font-semibold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Skills: {project.skills}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Job Search Tips */}
+              <div className={`rounded-xl p-8 ${darkMode ? 'bg-purple-900 bg-opacity-30 border border-purple-700' : 'bg-purple-50 border border-purple-200'}`}>
+                <h2 className="text-2xl font-bold mb-6">🎯 Landing Your Job</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-bold text-lg mb-3">Resume Tips</h3>
+                    <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <li>• Highlight Django/DRF projects</li>
+                      <li>• Show GitHub projects with good README</li>
+                      <li>• List technical skills clearly</li>
+                      <li>• Include numbers (API served X requests)</li>
+                      <li>• Be honest about what you've built</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-3">Interview Prep</h3>
+                    <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <li>• Know your portfolio projects inside-out</li>
+                      <li>• Explain architectural decisions</li>
+                      <li>• Be ready to code a simple API</li>
+                      <li>• Understand SQL joins & indexes</li>
+                      <li>• Ask about their tech stack</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Realistic Expectations */}
+              <div className={`rounded-xl p-8 ${darkMode ? 'bg-orange-900 bg-opacity-30 border border-orange-700' : 'bg-orange-50 border border-orange-200'}`}>
+                <h2 className="text-2xl font-bold mb-4">💬 Realistic Expectations</h2>
+                <div className={`space-y-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p>• First job often pays less than experienced devs - that's normal.</p>
+                  <p>• You might not know everything - nobody does. Learning on the job is expected.</p>
+                  <p>• Imposter syndrome is real. Every developer feels it. Push through.</p>
+                  <p>• Your first job is about experience, not just money. Choose wisely.</p>
+                  <p>• You'll make mistakes. That's how you learn. Good companies understand this.</p>
+                  <p>• It's OK to not know the answer. Say "I don't know, but I'll find out" - that's mature.</p>
+                </div>
+              </div>
+            </div>
+          );
+
+          const renderFAQ = () => (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-bold mb-2">Frequently Asked Questions</h1>
+                <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Common questions from learners like you</p>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    q: 'How long does this take?',
+                    a: 'Realistically, 3-6 months of consistent study (1-3 hours daily). Depends on your pace and available time. Rushing won\'t help - deep understanding is key.'
+                  },
+                  {
+                    q: 'Do I need a computer science degree?',
+                    a: 'No. Many developers are self-taught. A degree helps but isn\'t required. Skills and portfolio matter more.'
+                  },
+                  {
+                    q: 'What if I get stuck?',
+                    a: 'That\'s normal. Join dev communities (Discord, Reddit). Ask for help. Read documentation. Search for similar issues. Struggling is learning.'
+                  },
+                  {
+                    q: 'Should I build projects while learning?',
+                    a: 'YES. Build projects as you learn. This is how you truly understand concepts. Start small (todo app), then bigger.'
+                  },
+                  {
+                    q: 'What if I fail assessments?',
+                    a: 'Assessments aren\'t about passing/failing - they\'re feedback. If you score 50%, review that topic. Retake when ready. Failure is progress.'
+                  },
+                  {
+                    q: 'Do I need to learn everything?',
+                    a: 'No. Learn essentials first (marked "Required for Job"). Optional skills come later if you want to stand out.'
+                  },
+                  {
+                    q: 'Is it too late to start?',
+                    a: 'It\'s never too late. Your age doesn\'t matter. Your dedication does. Start today.'
+                  },
+                  {
+                    q: 'How do I avoid tutorial hell?',
+                    a: 'Don\'t just watch videos. Code along. Build your own projects. Test your knowledge with assessments. Make mistakes and debug.'
+                  },
+                  {
+                    q: 'What job should I target first?',
+                    a: 'Junior Backend Developer, Associate Backend Engineer, or Backend Developer Trainee. Be honest about your level. Ask for growth opportunities.'
+                  },
+                  {
+                    q: 'Do I need to know frontend?',
+                    a: 'No, but understanding frontend (HTML, CSS, JavaScript basics) helps. As a backend dev, you build APIs, not interfaces. Nice to have, not required.'
+                  },
+                ].map((faq, i) => (
+                  <FAQItem key={i} question={faq.q} answer={faq.a} darkMode={darkMode} />
+                ))}
+              </div>
+            </div>
+          );
+
+          return (
+            <div className={`min-h-screen transition-colors ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
+              {/* Navigation */}
+              <nav className={`sticky top-0 z-50 border-b ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                  <button onClick={() => setCurrentPage('home')} className="text-2xl font-bold flex items-center gap-2">
+                    <Code size={28} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+                    Backend Dev Path
+                  </button>
+
+                  {/* Desktop Menu */}
+                  <div className="hidden md:flex items-center gap-8">
+                    {[
+                      { id: 'home', label: 'Home' },
+                      { id: 'roadmap', label: 'Roadmap' },
+                      { id: 'personalized-plan', label: 'Plan' },
+                      { id: 'first-job-guide', label: 'Job Guide' },
+                      { id: 'faq', label: 'FAQ' },
+                    ].map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => setCurrentPage(item.id)}
+                        className={`font-semibold transition ${
+                          currentPage === item.id
+                            ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                            : darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Dark Mode Toggle & Mobile Menu */}
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setDarkMode(!darkMode)}
+                      className={`p-2 rounded-lg transition ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    >
+                      {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+                    </button>
+
+                    <button
+                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                      className="md:hidden p-2"
+                    >
+                      {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mobile Menu */}
+                {mobileMenuOpen && (
+                  <div className={`md:hidden border-t ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
+                      {[
+                        { id: 'home', label: 'Home' },
+                        { id: 'roadmap', label: 'Roadmap' },
+                        { id: 'personalized-plan', label: 'Plan' },
+                        { id: 'first-job-guide', label: 'Job Guide' },
+                        { id: 'faq', label: 'FAQ' },
+                      ].map(item => (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            setCurrentPage(item.id);
+                            setMobileMenuOpen(false);
+                          }}
+                          className={`block w-full text-left font-semibold py-2 ${
+                            currentPage === item.id
+                              ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                              : darkMode ? 'text-gray-400' : 'text-gray-600'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </nav>
+
+              {/* Main Content */}
+              <main className="max-w-7xl mx-auto px-4 py-12">
+                {selectedSkill ? renderSkillDetail() : (
+                  <>
+                    {currentPage === 'home' && renderHome()}
+                    {currentPage === 'roadmap' && renderRoadmap()}
+                    {currentPage === 'personalized-plan' && renderPersonalizedPlan()}
+                    {currentPage === 'first-job-guide' && renderFirstJobGuide()}
+                    {currentPage === 'faq' && renderFAQ()}
+                  </>
+                )}
+              </main>
+
+              {/* Footer */}
+              <footer className={`border-t mt-20 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                <div className="max-w-7xl mx-auto px-4 py-12">
+                  <div className="text-center">
+                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Built to help beginners become job-ready backend developers. Good luck! 🚀
+                    </p>
+                  </div>
+                </div>
+              </footer>
+            </div>
+          );
+        }
+
+        // ============================================================================
+        // ASSESSMENT QUIZ COMPONENT
+        // ============================================================================
+
+        function AssessmentQuiz({ skill, assessment, currentQuestion, onNext, onSubmit, darkMode }) {
+          const question = assessment.questions[currentQuestion];
+          const [selectedAnswer, setSelectedAnswer] = useState(null);
+          const [answered, setAnswered] = useState(false);
+          const [score, setScore] = useState(0);
+
+          if (!question) {
+            // Calculate final score
+            const finalScore = (score / assessment.questions.length) * 100;
+            return (
+              <div className="text-center">
+                <p className={`text-4xl font-bold mb-2 ${finalScore >= 70 ? 'text-green-500' : 'text-orange-500'}`}>
+                  {Math.round(finalScore)}%
+                </p>
+                <p className={`mb-4 ${finalScore >= 70 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                  {finalScore >= 90 ? 'Perfect!' : finalScore >= 70 ? 'Great job!' : 'Review and try again'}
+                </p>
+                <button
+                  onClick={() => onSubmit(Math.round(finalScore))}
+                  className={`px-6 py-2 rounded-lg font-semibold ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white transition`}
+                >
+                  Save Score & Continue
+                </button>
+              </div>
+            );
+          }
+
+          const handleSelectAnswer = (index) => {
+            setSelectedAnswer(index);
+            setAnswered(true);
+            if (index === question.correct) {
+              setScore(score + 1);
+            }
+          };
+
+          return (
+            <div>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Question {currentQuestion + 1} of {assessment.questions.length}
+                  </p>
+                  <div className="w-24 h-2 bg-gray-300 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500"
+                      style={{ width: `${((currentQuestion + 1) / assessment.questions.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-6">{question.question}</h3>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {question.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => !answered && handleSelectAnswer(index)}
+                    disabled={answered}
+                    className={`w-full p-4 text-left rounded-lg font-semibold transition ${
+                      selectedAnswer === index
+                        ? index === question.correct
+                          ? 'bg-green-500 text-white'
+                          : 'bg-red-500 text-white'
+                        : answered && index === question.correct
+                        ? 'bg-green-500 text-white'
+                        : darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'
+                    } ${answered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+
+              {answered && (
+                <div className={`p-4 rounded-lg mb-6 ${darkMode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-800'}`}>
+                  <p className="font-semibold mb-2">Explanation:</p>
+                  <p>{question.explanation}</p>
+                </div>
+              )}
+
+              {answered && (
+                <button
+                  onClick={() => onNext(currentQuestion)}
+                  className={`w-full px-6 py-3 rounded-lg font-semibold ${
+                    darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
+                  } text-white transition`}
+                >
+                  {currentQuestion === assessment.questions.length - 1 ? 'See Results' : 'Next Question'}
+                </button>
+              )}
+            </div>
+          );
+        }
+
+        // ============================================================================
+        // FAQ ITEM COMPONENT
+        // ============================================================================
+
+        function FAQItem({ question, answer, darkMode }) {
+          const [open, setOpen] = useState(false);
+
+          return (
+            <div className={`rounded-xl border ${darkMode ? 'border-gray-700' : 'border-gray-200'} overflow-hidden`}>
+              <button
+                onClick={() => setOpen(!open)}
+                className={`w-full p-6 flex items-center justify-between font-semibold transition ${
+                  darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'
+                }`}
+              >
+                <span className="text-left">{question}</span>
+                {open ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+              </button>
+              {open && (
+                <div className={`p-6 border-t ${darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-white'}`}>
+                  <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{answer}</p>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // Initialize and render the app
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<BackendLearningPlatform />);
+    </script>
+</body>
+</html>
